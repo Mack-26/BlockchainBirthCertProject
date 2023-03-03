@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Medical Certificate Form</title>
+    <link rel="stylesheet" type="text/css" href="cssforhtmlform (1).css">
+  </head>
+  <body>
+    
+    <h1>Medical Certificate Form</h1>
+    <form id="mc-form">
+
+       
+      <p>Certificate No: <span id="certificate-no">0</span></p>
+
+      <label for="hospDelivered">Hospital Address:</label>
+      <input type="text" id="hospDelivered" name="hospDelivered" readonly><br>
+
+      <label for="fatherName">Father Name:</label>
+      <input type="text" id="fatherName" name="fatherName" required><br>
+
+      <label for="motherName">Mother Name:</label>
+      <input type="text" id="motherName" name="motherName"><br>
+
+      <label for="babyName">Baby Name:</label>
+      <input type="text" id="babyName" name="babyName" required><br>
+
+      <label for="birthDate">Birth Date:</label>
+      <input type="date" id="birthDate" name="birthDate" required><br>
+
+      <label for="birthTime">Birth Time:</label>
+      <input type="time" id="birthTime" name="birthTime" required><br>
+
+      <label for="Sex">Sex:</label>
+      <input type="radio" id="male" name="Sex" value="Male" required>
+      <label for="male">Male</label>
+      <input type="radio" id="female" name="Sex" value="Female">
+      <label for="female">Female</label>
+      <input type="radio" id="other" name="Sex" value="Other">
+      <label for="other">Other</label><br>
+
+      <label for="permAdd">Permanent Address:</label>
+      <textarea id="permAdd" name="permAdd" required></textarea><br>
+
+      <label for="docName">Issuing Doctor's Name:</label>
+      <input type="text" id="docName" name="docName" required><br>
+
+      <label for="RegistrarAddress">Registrar's Address:</label>
+      <textarea id="RegistrarAddress" name="RegistrarAddress" readonly></textarea><br>
+
+      <label for="registrarVerified">Registrar Verification:</label>
+      <input type="checkbox" id="registrarVerified" name="registrarVerified" disabled><br>
+
+
+      <button onclick="createBirthRecord()">Submit</button>
+
+    </form>
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+  <script>
+        const provider = new ethers.providers.Web3Provider(
+        window.ethereum,
+        "goerli"
+    );
+    const ContractAddress = "0x29F045d9aB96f64DB4bD7be4e979E1455AD758E5";
+    const ContractABI = [
+    {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "attributeID",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "fatherName",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "motherName",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "babyName",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "birthDate",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "birthTime",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "Sex",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "permAdd",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "docName",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "registrarVerified",
+                "type": "bool"
+            }
+        ],
+        "name": "certAdded",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "fatherName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "motherName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "babyName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "birthDate",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "birthTime",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "Sex",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "permAdd",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "docName",
+                "type": "string"
+            }
+        ],
+        "name": "createBirthRecord",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_no",
+                "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "_babyName",
+                "type": "string"
+            }
+        ],
+        "name": "registrarVerification",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_no",
+                "type": "uint256"
+            }
+        ],
+        "name": "revokeCertificate",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "hospName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "firstLine",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "taluka",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "district",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "state",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "pincode",
+                "type": "uint256"
+            }
+        ],
+        "name": "WhiteListHospital",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "taluka",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "district",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "pincode",
+                "type": "uint256"
+            }
+        ],
+        "name": "WhiteListRegistrars",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "BCert",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "hospDelivered",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "fatherName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "motherName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "babyName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "birthDate",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "birthTime",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "Sex",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "permAdd",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "docName",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "certHash",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "RegistrarAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "bool",
+                "name": "registrarVerified",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "BlackCertCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "Cert",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "hospDelivered",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "fatherName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "motherName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "babyName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "birthDate",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "birthTime",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "Sex",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "permAdd",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "docName",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "certHash",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "RegistrarAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "bool",
+                "name": "registrarVerified",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "certCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "certNumber",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "hospDelivered",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "fatherName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "motherName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "babyName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "birthDate",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "birthTime",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "Sex",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "permAdd",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "docName",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "certHash",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "RegistrarAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "bool",
+                "name": "registrarVerified",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "Count",
+                "type": "uint256"
+            }
+        ],
+        "name": "getBirthDetails",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "address",
+                        "name": "hospDelivered",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "fatherName",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "motherName",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "babyName",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "birthDate",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "birthTime",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "Sex",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "permAdd",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "docName",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "certHash",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "RegistrarAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "registrarVerified",
+                        "type": "bool"
+                    }
+                ],
+                "internalType": "struct newBirth.Certificate",
+                "name": "",
+                "type": "tuple"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "no",
+                "type": "uint256"
+            }
+        ],
+        "name": "getHospitalDetails",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "address",
+                        "name": "hospital",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "hospName",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "firstLine",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "taluka",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "district",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "state",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "pincode",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct newBirth.hospDetails",
+                "name": "",
+                "type": "tuple"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "no",
+                "type": "uint256"
+            }
+        ],
+        "name": "getRegistrarDetails",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "address",
+                        "name": "Registrar",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "registrarName",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "taluka",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "district",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "pincode",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct newBirth.registrarDetails",
+                "name": "",
+                "type": "tuple"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "hosp",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "hospital",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "hospName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "firstLine",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "taluka",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "district",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "state",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "pincode",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "hospCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "hospDeets",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "hospital",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "hospName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "firstLine",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "taluka",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "district",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "state",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "pincode",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "Reg",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "Registrar",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "registrarName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "taluka",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "district",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "pincode",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "registrarCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "registrarDeets",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "Registrar",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "registrarName",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "taluka",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "district",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "pincode",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "rootCA",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+];
+
+    let dappContract;
+    let signer;
+
+    provider.send("eth_requestAccounts", []).then(() => {
+      provider.listAccounts().then(function (accounts) {
+        signer = provider.getSigner(accounts[0]);
+          dappContract = new ethers.Contract(
+          ContractAddress,
+          ContractABI,
+          signer
+        );
+      });
+    }); 
+
+    
+
+    // async function retrieve() {
+    //   const mood = document.getElementById("mood").value;
+    //   const setMoodPromise = MoodContract.setMood(mood);
+    //   await setMoodPromise;
+    // }
+
+    // async function get() {
+    //   const getPromise = dappContract.retrieve();
+    //   const Details = await getPromise;
+    //   console.log(Details);
+    // }
+
+    async function createBirthRecord() {
+      const fatherName = document.getElementById("fatherName").value;
+      const motherName = document.getElementById("motherName").value;
+      const babyName= document.getElementById("babyName").value;
+      const birthDate = document.getElementById("birthDate").value;
+      const birthTime = document.getElementById("birthTime").value;
+      const Sex = document.getElementById("Sex").value;
+      const permAdd= document.getElementById("permAdd").value;
+      const docName = document.getElementById("docName").value;
+
+      const setPromise = dappContract.createBirthRecord(fatherName, motherName, babyName, birthDate, birthTime, Sex, permAdd, docName);
+      await setMoodPromise;
+    }
+
+    // // action on submit
+    // $('hopsital').on('submit', function(createBirthRecord) {
+    // contract.createBirthRecord($('input').val());
+    // })
+  </script>
+
+    </body>
+</html>
